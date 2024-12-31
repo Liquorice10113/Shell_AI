@@ -21,7 +21,7 @@ def parse_history():
         return [
             {
                 "role": "system",
-                "content": f"You are a helpful AI assistant. User is now in linux bash shell. This coversation start at {time.ctime()}. Reply with short and precise answers, don't give further explanations unless user asked.",
+                "content": f"You are a helpful AI assistant. User is now in linux bash shell. This coversation starts at {time.ctime()}. Reply with short and precise answers, don't give further explanations unless user asked.",
             }
         ]
     history = json.load(open(history_file, "r"))
@@ -73,5 +73,7 @@ if __name__ == "__main__":
         if os.path.exists(history_file):
             os.remove(history_file)
         print("Memory cleared!")
+    elif msg in ['-h','--help','help']:
+        print('Shell AI.\nUsage: python3 ai.py [option] [prompt]\nOptions:\n\treset\t\tReset context.\n\t-h, --help\tDisplay this message.')
     else:
         ai(msg)
