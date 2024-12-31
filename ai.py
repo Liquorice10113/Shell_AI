@@ -70,7 +70,8 @@ if __name__ == "__main__":
     if not msg:
         print("Type something.")
     elif msg == "reset":
-        os.remove(history_file)
+        if os.path.exists(history_file):
+            os.remove(history_file)
         print("Memory cleared!")
     else:
         ai(msg)
