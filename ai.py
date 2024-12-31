@@ -61,6 +61,7 @@ def ai(user_input):
         console.print(Markdown(assistant_response))
     else:
         print("AI API request unsuccessful")
+        print(response.text)
 
 
 if __name__ == "__main__":
