@@ -27,6 +27,12 @@ def parse_history():
     history = json.load(open(history_file, "r"))
     return history
 
+def print_history():
+    if not os.path.exists(history_file):
+        return
+    history = json.load(open(history_file, "r"))
+    for msg in history:
+        console.print(Markdown((f"---\n**{msg['role']}**: {msg['content']}")))
 
 def parse_config():
     global config
@@ -73,7 +79,9 @@ if __name__ == "__main__":
         if os.path.exists(history_file):
             os.remove(history_file)
         print("Memory cleared!")
+    elif msg == 'context':
+        print_history()
     elif msg in ['-h','--help','help']:
-        print('Shell AI.\nUsage: python3 ai.py [option] [prompt]\nOptions:\n\treset\t\tReset context.\n\t-h, --help\tDisplay this message.')
+        print('Shell AI.\nUsage: python3 ai.py [option] [prompt]\nOptions:\n\treset\t\tReset context.\n\tcontext\t\tView context.\n\t-h, --help\tDisplay this message.')
     else:
         ai(msg)
