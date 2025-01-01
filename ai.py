@@ -4,7 +4,7 @@ import requests
 import os, sys, json, time
 from rich.console import Console
 from rich.markdown import Markdown
-
+import subprocess 
 
 history_file = os.path.expanduser("~/.shell_ai_history")
 config_file = os.path.expanduser("~/.shell_ai_config")
@@ -15,6 +15,15 @@ config = {
 }
 
 console = Console()
+
+def execute_command(cmd):
+    output = subprocess.check_output(cmd, shell=True)
+    output = output.decode('utf-8')
+    messages = parse_history()
+    messages.append({"role": "user", "content": f"User just executed `{cmd}`, the result is \n```\n{output}\n```"})
+    json.dump(messages, open(history_file, "w"))
+    print(output)
+
 
 def parse_history():
     if not os.path.exists(history_file):
@@ -58,7 +67,6 @@ def ai(user_input):
     messages = parse_history()
     messages.append({"role": "user", "content": user_input})
     data = {"model": "any", "messages": messages}
-    # print(messages)
     response = requests.post(api_url, headers=headers, json=data)
     if response.status_code == 200:
         assistant_response = response.json()["choices"][0]["message"]["content"]
@@ -82,6 +90,9 @@ if __name__ == "__main__":
     elif msg == 'context':
         print_history()
     elif msg in ['-h','--help','help']:
-        print('Shell AI.\nUsage: python3 ai.py [option] [prompt]\nOptions:\n\treset\t\tReset context.\n\tcontext\t\tView context.\n\t-h, --help\tDisplay this message.')
+        print('Shell AI.\nUsage: python3 ai.py [option]|[prompt]\nOptions:\n\treset\t\t\tReset context.\n\tcontext\t\t\tView context.\n\texec [shell command]\tRun a shell command and add it to chat context.\n\t-h, --help\t\tDisplay this message.')
+    elif msg.startswith('exec '):
+        cmd = msg[5:]
+        execute_command(cmd)
     else:
         ai(msg)
