@@ -46,9 +46,19 @@ ai "Can you show me some examples of markdown?"
 
 ![](res/image.png)
 
-### Reset Memory
+### Include Shell Command Output
+You can add output of a shell command to context.
 
-To reset the AI's memory, use the following command:
+```bash
+ai exec [shell command]
+```
+For example, you can include a txt file in the context by `ai exec cat text.txt`:
+
+![](res/image2.png)
+
+### Reset Context
+
+To reset the AI's context, use the following command:
 
 ```bash
 ai reset
