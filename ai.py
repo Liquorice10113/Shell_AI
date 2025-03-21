@@ -79,6 +79,7 @@ def ai(user_input):
     response = requests.post(api_url, headers=headers, json=data, stream=True)
     if response.status_code == 200:
         with Live(console=console) as live:
+            live.update(Markdown(f"*...Thinking...*"))
             full_response = ""
             for line in response.iter_lines():
                 if line:
