@@ -37,7 +37,7 @@ def parse_history():
         return [
             {
                 "role": "system",
-                "content": f"You are a helpful AI assistant. User is now in linux bash shell. This conversation started at {time.ctime()}. Reply with short and precise answers, don't give further explanations unless user asked.",
+                "content": f"You are a helpful AI assistant. User is now in a linux bash shell. Reply with short and precise answers, don't give further explanations unless user asked. This conversation started at {time.ctime()}.",
             }
         ]
     history = json.load(open(history_file, "r"))
