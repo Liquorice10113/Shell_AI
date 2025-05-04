@@ -63,6 +63,7 @@ def parse_config():
 
 
 def ai(user_input):
+    thinking = False
     api_url = config["api_url"]
     api_token = config["api_token"]
     if api_token == "YOUR-TOKEN-HERE":
@@ -79,7 +80,8 @@ def ai(user_input):
     response = requests.post(api_url, headers=headers, json=data, stream=True)
     if response.status_code == 200:
         with Live(console=console) as live:
-            live.update(Markdown(f"*...Thinking...*"))
+            live.update(Markdown(f"*...*"))
+            visible_response = ""
             full_response = ""
             for line in response.iter_lines():
                 if line:
@@ -94,11 +96,19 @@ def ai(user_input):
                         try:
                             if decoded_line["choices"][0]['delta']:
                                 delta = decoded_line["choices"][0]['delta']["content"]
+                                if "<think>" in delta:
+                                    thinking = True
+                                    delta = delta.replace("<think>", "```\n")
+                                if not thinking:
+                                    visible_response += delta
+                                if "</think>" in delta:
+                                    thinking = False
+                                    delta = delta.replace("</think>", "\n```\n")
                                 full_response += delta
-                                live.update(Markdown(f"**assistant**: {full_response}"))
+                                live.update(Markdown(f"{full_response}"))
                         except:
                             print(decoded_line)
-            messages.append({"role": "assistant", "content": full_response})
+            messages.append({"role": "assistant", "content": visible_response})
             json.dump(messages, open(history_file, "w"))
     else:
         print("AI API request unsuccessful")
