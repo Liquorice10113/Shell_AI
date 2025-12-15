@@ -24,7 +24,10 @@ Create or edit the `~/.shell_ai_config` file with your API token and URL:
 ```json
 {
     "api_url": "https://api.openai.com/v1/chat/completions",
-    "api_token": "YOUR-TOKEN-HERE"
+    "api_token": "YOUR-TOKEN-HERE",
+    "model": "gpt-4-0613",
+    "temperature": 0.7,
+    "max_tokens": 1500
 }
 ```
 
