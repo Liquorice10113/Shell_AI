@@ -13,10 +13,12 @@ config_file = os.path.expanduser("~/.shell_ai_config")
 config = {
     "api_url": "https://api.openai.com/v1/chat/completions",
     "api_token": "YOUR-TOKEN-HERE",
+    "model": "gpt-4-0613",
+    "temperature": 0.7,
+    "max_tokens": 1500
 }
 
 console = Console()
-
 
 def execute_command(cmd):
     output = subprocess.check_output(cmd, shell=True)
@@ -66,6 +68,9 @@ def ai(user_input):
     thinking = False
     api_url = config["api_url"]
     api_token = config["api_token"]
+    model = config["model"]
+    temperature = config["temperature"]
+    max_tokens = config["max_tokens"]
     if api_token == "YOUR-TOKEN-HERE":
         print(f"Put your token in {config_file} before using!")
         exit(0)
@@ -76,7 +81,7 @@ def ai(user_input):
     }
     messages = parse_history()
     messages.append({"role": "user", "content": user_input})
-    data = {"model": "any", "messages": messages, "stream": True}
+    data = {"model": model, "messages": messages, "stream": True, "temperature": temperature, "max_tokens": max_tokens}
     response = requests.post(api_url, headers=headers, json=data, stream=True)
     if response.status_code == 200:
         with Live(console=console) as live:
@@ -96,6 +101,7 @@ def ai(user_input):
                         try:
                             if decoded_line["choices"][0]['delta']:
                                 delta = decoded_line["choices"][0]['delta']["content"]
+                                delta = "" if not delta else delta
                                 if "<think>" in delta:
                                     thinking = True
                                     delta = delta.replace("<think>", "```\n")
@@ -106,8 +112,9 @@ def ai(user_input):
                                     delta = delta.replace("</think>", "\n```\n")
                                 full_response += delta
                                 live.update(Markdown(f"{full_response}"))
-                        except:
+                        except Exception as e:
                             print(decoded_line)
+                            print("Error:", e)
             messages.append({"role": "assistant", "content": visible_response})
             json.dump(messages, open(history_file, "w"))
     else:
